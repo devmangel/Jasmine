@@ -1,6 +1,4 @@
-Aquí tienes un ejemplo de un README profesional para tu librería Jasmine:
 
-```markdown
 # Jasmine
 
 Jasmine es una implementación ligera y eficiente de un sistema similar a Redis, diseñado para brindar soporte a estructuras de datos clave-valor con persistencia y seguridad. Esta librería está escrita en Node.js y proporciona funcionalidades clave como almacenamiento en memoria, persistencia de datos a través de snapshots (RDB) y archivos de solo anexado (AOF), y un robusto sistema de autenticación y autorización para proteger el acceso a los datos.
