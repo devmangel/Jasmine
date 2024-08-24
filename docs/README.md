@@ -116,5 +116,3 @@ Este proyecto está licenciado bajo los términos de la [MIT License](LICENSE).
 
 Para más información, preguntas o comentarios, puedes contactar a [devmangel](mailto:soporte@productos-ai.com).
 ```
-
-Este README proporciona una visión general clara y profesional de tu proyecto, cubriendo los aspectos esenciales como características, instalación, uso básico, persistencia, seguridad y contribución. Asegúrate de personalizar el contenido según tus necesidades específicas, como el repositorio y la información de contacto.
