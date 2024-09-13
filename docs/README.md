@@ -115,4 +115,3 @@ Este proyecto está licenciado bajo los términos de la [MIT License](LICENSE).
 ## Contacto
 
 Para más información, preguntas o comentarios, puedes contactar a [devmangel](mailto:soporte@productos-ai.com).
-```
