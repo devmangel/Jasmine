@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { v4 } = require('uuid');
 
 const CONTAINERS_FILE = path.join(__dirname, '../data/containers.json');
 
@@ -10,7 +11,7 @@ class ContainerRepository {
 
   // Crear un nuevo contenedor para un usuario
   createContainer(userId, containerName) {
-    const containerId = `container_${Date.now()}`;  // Generar un ID único para el contenedor
+    const containerId = `${containerName}_${v4()}`;  // Generar un ID único para el contenedor
     const newContainer = {
       id: containerId,
       userId,

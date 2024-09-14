@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+const v4 = require('uuid').v4;
 
 class AuthService {
   constructor(userRepository, authentication) {
@@ -7,9 +8,9 @@ class AuthService {
   }
 
   // Lógica para autenticar a un usuario
-  async authenticate(username, password) {
+  async authenticate(email, password) {
     // Obtener al usuario desde el repositorio
-    const user = this.userRepository.getUser(username);
+    const user = this.userRepository.getUser(email);
     if (!user) {
       throw new Error('Invalid credentials');
     }
@@ -22,17 +23,16 @@ class AuthService {
 
     // Si la autenticación es correcta, generar un token JWT
     const token = this.authentication.generateToken({
-      username: user.username,
-      role: user.role || 'user',  // Asignar un rol si no se ha asignado uno
+      userId: user.userId,
     });
 
     return token;
   }
 
   // Lógica para registrar un usuario
-  async register(username, password) {
+  async register(email, password) {
     // Verificar si el usuario ya existe
-    const existingUser = this.userRepository.getUser(username);
+    const existingUser = this.userRepository.getUser(email);
     if (existingUser) {
       throw new Error('User already exists');
     }
@@ -40,8 +40,8 @@ class AuthService {
     // Hashear la contraseña y guardar el usuario
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = {
-      id: `pai${Date.now()}`,
-      username,
+      userId: v4(),
+      email,
       password: hashedPassword,
       containers: [],
     };

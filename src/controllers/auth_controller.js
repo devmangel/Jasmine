@@ -5,10 +5,10 @@ class AuthController {
   
     // Método para manejar el login
     async login(req, res) {
-      const { username, password } = req.body;
+      const { email, password } = req.body;
   
       try {
-        const token = await this.authService.authenticate(username, password);
+        const token = await this.authService.authenticate(email, password);
         res.status(200).send({ token });
       } catch (error) {
         res.status(401).send({ error: error.message });
@@ -17,11 +17,11 @@ class AuthController {
   
     // Método para manejar el registro
     async register(req, res) {
-      const { username, password } = req.body;
+      const { email, password } = req.body;
   
       try {
-        const newUser = await this.authService.register(username, password);
-        res.status(201).send({ message: 'User registered successfully', userId: newUser.username });
+        const newUser = await this.authService.register(email, password);
+        res.status(201).send({ message: 'User registered successfully', userId: newUser.userId });
       } catch (error) {
         res.status(400).send({ error: error.message });
       }

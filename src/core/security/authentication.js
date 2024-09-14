@@ -3,7 +3,7 @@
 const jwt = require('jsonwebtoken');
 
 class Authentication {
-  constructor(secretKey, tokenExpiry = '1h') {
+  constructor(secretKey, tokenExpiry = '8h') {
     this.secretKey = secretKey;  // Clave secreta para firmar los tokens
     this.tokenExpiry = tokenExpiry;  // Tiempo de expiración del token
   }
@@ -11,8 +11,7 @@ class Authentication {
   // Generar un token para un usuario autenticado
   generateToken(user) {
     const payload = {
-      username: user.username,
-      role: user.role,  // Ejemplo de cómo podrías incluir roles
+      userId: user.userId,
     };
     return jwt.sign(payload, this.secretKey, { expiresIn: this.tokenExpiry });
   }

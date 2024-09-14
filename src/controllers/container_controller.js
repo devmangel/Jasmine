@@ -6,10 +6,10 @@ class ContainerController {
     // Crear un contenedor
     createContainer(req, res) {
       const { containerName } = req.body;
-      const username = req.user.username;  // Supone que el ID del usuario está en el token JWT
+      const userId = req.user.userId;  // JWT
   
       try {
-        const containerId = this.containerService.createContainer(username, containerName);
+        const containerId = this.containerService.createContainer(userId, containerName);
         res.status(201).send({ containerId });
       } catch (error) {
         res.status(400).send({ error: error.message });
@@ -20,7 +20,7 @@ class ContainerController {
     storeData(req, res) {
       const { key, value } = req.body;
       const { containerId } = req.params;
-      const userId = req.user.id;
+      const userId = req.user.username;
   
       try {
         this.containerService.storeDataInContainer(userId, containerId, key, value);
@@ -33,7 +33,7 @@ class ContainerController {
     // Obtener datos de un contenedor
     getData(req, res) {
       const { containerId, key } = req.params;
-      const userId = req.user.id;
+      const userId = req.user.username;
   
       try {
         const value = this.containerService.getDataFromContainer(userId, containerId, key);
@@ -46,7 +46,7 @@ class ContainerController {
     // Eliminar datos de un contenedor
     deleteData(req, res) {
       const { containerId, key } = req.params;
-      const userId = req.user.id;
+      const userId = req.user.username;
   
       try {
         this.containerService.deleteDataFromContainer(userId, containerId, key);

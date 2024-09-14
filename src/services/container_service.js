@@ -4,24 +4,25 @@ class ContainerService {
     this.containerRepository = containerRepository;
   }
 
-  createContainer(username, containerName) {
-    const user = this.userRepository.getUser(username); 
+  createContainer(userId, containerName) {
+    const user = this.userRepository.getUserById(userId); 
     if (!user) {
       throw new Error('User not found');
     }
 
-    const containerId = this.containerRepository.createContainer(user.username, containerName);
+    const containerId = this.containerRepository.createContainer(user.userId, containerName);
+    this.userRepository.updateContainers(userId, containerId);
     return containerId;
   }
 
   // Almacenar datos en un contenedor
-  storeDataInContainer(username, containerId, key, value) {
-    const user = this.userRepository.getUser(username);  // Usamos username en lugar de userId
+  storeDataInContainer(userId, containerId, key, value) {
+    const user = this.userRepository.getUserById(userId);  // Usamos username en lugar de userId
     if (!user) {
       throw new Error('User not found');
     }
 
-    const container = this.containerRepository.getContainerById(user.username, containerId);
+    const container = this.containerRepository.getContainerById(user.userId, containerId);
     if (!container) {
       throw new Error('Container not found or access denied');
     }
@@ -30,8 +31,8 @@ class ContainerService {
   }
 
   // Obtener datos de un contenedor
-  getDataFromContainer(username, containerId, key) {
-    const container = this.containerRepository.getContainerById(username, containerId);
+  getDataFromContainer(userId, containerId, key) {
+    const container = this.containerRepository.getContainerById(userId, containerId);
     if (!container) {
       throw new Error('Container not found or access denied');
     }
@@ -45,8 +46,8 @@ class ContainerService {
   }
 
   // Eliminar datos de un contenedor
-  deleteDataFromContainer(username, containerId, key) {
-    const container = this.containerRepository.getContainerById(username, containerId);
+  deleteDataFromContainer(userId, containerId, key) {
+    const container = this.containerRepository.getContainerById(userId, containerId);
     if (!container) {
       throw new Error('Container not found or access denied');
     }
