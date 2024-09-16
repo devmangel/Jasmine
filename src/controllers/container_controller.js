@@ -36,7 +36,7 @@ class ContainerController {
       const userId = req.user.userId;
   
       try {
-        let value = this.containerService.getDataFromContainer(userId, containerId, key);
+        let value = this.containerService.getDataFromContainer(containerId, key);
         value = JSON.parse(value);
         res.status(200).send({ value });
       } catch (error) {
