@@ -1,0 +1,12 @@
+SET Miguel 1994
+SET Miguel 1995
+SET Brandon 2000
+SET Jasmine 1989
+SET Dayis 1996
+SET Jasmin 2008
+SET Jazmin 2008
+SET Jazmine 2008
+DELETE Jazmin
+SET user:1 [object Object]
+SET Miguel test
+SET Miguel [object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]

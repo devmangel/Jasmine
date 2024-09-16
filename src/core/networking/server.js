@@ -7,6 +7,12 @@ const PersistenceManager = require('../persistence/persistence_manager');
 const Authentication = require('../security/authentication');
 const Authorization = require('../security/authorization');
 const SecurityManager = require('../security/security_manager');
+const UserRepository = require('../../repositories/user_repository');
+const AuthService = require('../../services/auth_service');
+const AuthController = require('../../controllers/auth_controller');
+const ContainerController = require('../../controllers/container_controller');
+const ContainerRepository = require('../../repositories/container_repository');
+const ContainerService = require('../../services/container_service');
 
 const app = express();
 const port = 3000;
@@ -39,24 +45,28 @@ authorization.defineRole('user', ['GET']);
 // Configurar el SecurityManager
 const securityManager = new SecurityManager(auth, authorization);
 
-// Ruta de autenticación
-app.post('/login', (req, res) => {
-  const { username, password } = req.body;
+// Crear instancias de repositorio, servicio y controlador
+const userRepository = new UserRepository();
+const containerRepository = new ContainerRepository();
+const authService = new AuthService(userRepository, auth);
+const authController = new AuthController(authService);
 
-  // Lógica simple de autenticación (solo como ejemplo)
-  if (username === 'admin' && password === 'password') {
-    const token = auth.generateToken({ username: 'admin', role: 'admin' });
-    return res.status(200).send({ token });
-  } else if (username === 'user' && password === 'password') {
-    const token = auth.generateToken({ username: 'user', role: 'user' });
-    return res.status(200).send({ token });
-  }
-  
-  return res.status(401).send({ error: 'Invalid credentials' });
-});
+app.post('/register', (req, res) => authController.register(req, res));
+app.post('/login', (req, res) => authController.login(req, res));
+
 
 // Protege las rutas con el middleware de autenticación
-app.use(auth.validateToken.bind(auth));  // Asegurar que todas las rutas siguientes estén autenticadas
+app.use(auth.validateToken.bind(auth)); 
+
+const containerService = new ContainerService(userRepository, containerRepository);
+const containerController = new ContainerController(containerService);
+
+// Rutas para la gestión de contenedores
+app.post('/containers', (req, res) => containerController.createContainer(req, res));
+app.post('/containers/:containerId/data', (req, res) => containerController.storeData(req, res));
+app.get('/containers/:containerId/data/:key', (req, res) => containerController.getData(req, res));
+app.delete('/containers/:containerId/data/:key', (req, res) => containerController.deleteData(req, res));
+
 
 // Ruta para SET (solo admin)
 app.post('/set', securityManager.secure('SET'), (req, res) => {
