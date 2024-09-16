@@ -15,7 +15,6 @@ const ContainerRepository = require('../../repositories/container_repository');
 const ContainerService = require('../../services/container_service');
 
 const app = express();
-const port = 3000;
 
 // Configurar middlewares
 app.use(bodyParser.json());
@@ -96,6 +95,6 @@ app.delete('/del/:key', securityManager.secure('DELETE'), (req, res) => {
 });
 
 // Iniciar el servidor
-app.listen(port, () => {
+app.listen(process.env.PORT || 3500, () => {
   console.log(`Jasmine server running on http://localhost:${port}`);
 });
