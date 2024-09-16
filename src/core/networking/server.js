@@ -14,7 +14,9 @@ const ContainerController = require('../../controllers/container_controller');
 const ContainerRepository = require('../../repositories/container_repository');
 const ContainerService = require('../../services/container_service');
 
+require('dotenv').config()
 const app = express();
+const port = process.env.PORT;
 
 // Configurar middlewares
 app.use(bodyParser.json());
@@ -95,6 +97,6 @@ app.delete('/del/:key', securityManager.secure('DELETE'), (req, res) => {
 });
 
 // Iniciar el servidor
-app.listen(process.env.PORT || 3500, () => {
+app.listen(port, () => {
   console.log(`Jasmine server running on http://localhost:${port}`);
 });
