@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const { v4 } = require('uuid');
 
-const CONTAINERS_FILE = path.join(__dirname, '../data/containers.json');
+const CONTAINERS_FILE = path.join(__dirname, '../../data/containers.json');
 
 class ContainerRepository {
   constructor() {
@@ -13,7 +13,7 @@ class ContainerRepository {
   createContainer(userId, containerName) {
     const containerId = `${containerName}_${v4()}`;  // Generar un ID único para el contenedor
     const newContainer = {
-      id: containerId,
+      containerId: containerId,
       userId,
       name: containerName,
       data: {}  // Contendrá los pares clave-valor
@@ -25,13 +25,23 @@ class ContainerRepository {
   }
 
   // Obtener un contenedor por ID (asegurarse de que pertenece al usuario)
-  getContainerById(userId, containerId) {
-    return this.containers.find(c => c.id === containerId && c.userId === userId) || null;
+  getContainerById(containerId) {
+    console.log("Buscando contenedor con containerId:", containerId); 
+  
+    const container = this.containers.find(c => c.containerId === containerId) || null;
+  
+    if (!container) {
+      console.log("Contenedor no encontrado.");
+    } else {
+      console.log("Contenedor encontrado:", container);
+    }  
+  
+    return container;
   }
 
   // Almacenar datos en un contenedor
   storeData(containerId, key, value) {
-    const container = this.getContainer(containerId);
+    const container = this.getContainerById(containerId);
     if (container) {
       container.data[key] = value;
       this.saveContainers();
@@ -40,13 +50,13 @@ class ContainerRepository {
 
   // Obtener datos de un contenedor
   getData(containerId, key) {
-    const container = this.getContainer(containerId);
+    const container = this.getContainerById(containerId);
     return container ? container.data[key] || null : null;
   }
 
   // Eliminar datos de un contenedor
   deleteData(containerId, key) {
-    const container = this.getContainer(containerId);
+    const container = this.getContainerById(containerId);
     if (container && container.data[key]) {
       delete container.data[key];
       this.saveContainers();
@@ -70,7 +80,7 @@ class ContainerRepository {
 
   // Obtener un contenedor por ID
   getContainer(containerId) {
-    return this.containers.find(c => c.id === containerId) || null;
+    return this.containers.find(c => c.containerId === containerId) || null;
   }
 }
 

@@ -22,17 +22,22 @@ class ContainerService {
       throw new Error('User not found');
     }
 
-    const container = this.containerRepository.getContainerById(user.userId, containerId);
+    const container = this.containerRepository.getContainerById(containerId);
     if (!container) {
       throw new Error('Container not found or access denied');
+    }
+
+    if (typeof value === 'object') {
+      console.log(`Value entro: ${value}`)
+      value = JSON.stringify(value);
     }
 
     this.containerRepository.storeData(containerId, key, value);
   }
 
   // Obtener datos de un contenedor
-  getDataFromContainer(userId, containerId, key) {
-    const container = this.containerRepository.getContainerById(userId, containerId);
+  getDataFromContainer(containerId, key) {
+    const container = this.containerRepository.getContainerById(containerId);
     if (!container) {
       throw new Error('Container not found or access denied');
     }
@@ -46,8 +51,8 @@ class ContainerService {
   }
 
   // Eliminar datos de un contenedor
-  deleteDataFromContainer(userId, containerId, key) {
-    const container = this.containerRepository.getContainerById(userId, containerId);
+  deleteDataFromContainer(containerId, key) {
+    const container = this.containerRepository.getContainerById(containerId);
     if (!container) {
       throw new Error('Container not found or access denied');
     }
