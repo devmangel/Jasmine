@@ -3,7 +3,7 @@
 const jwt = require('jsonwebtoken');
 
 class Authentication {
-  constructor(secretKey, tokenExpiry = '8h') {
+  constructor(secretKey, tokenExpiry = '24h') {
     this.secretKey = secretKey;  // Clave secreta para firmar los tokens
     this.tokenExpiry = tokenExpiry;  // Tiempo de expiración del token
   }
@@ -13,7 +13,11 @@ class Authentication {
     const payload = {
       userId: user.userId,
     };
-    return jwt.sign(payload, this.secretKey, { expiresIn: this.tokenExpiry });
+  
+    // Condicional para definir el token sin expiración para "pai_admin"
+    const options = user.userId === 'pai_admin' ? {} : { expiresIn: this.tokenExpiry };
+  
+    return jwt.sign(payload, this.secretKey, options);
   }
 
   // Middleware para validar un token en cada solicitud

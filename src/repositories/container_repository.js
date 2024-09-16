@@ -11,11 +11,11 @@ class ContainerRepository {
 
   // Crear un nuevo contenedor para un usuario
   createContainer(userId, containerName) {
-    const containerId = `${containerName}_${v4()}`;  // Generar un ID único para el contenedor
+    const containerId = `${containerName}`;  // Generar un ID único para el contenedor
     const newContainer = {
       containerId: containerId,
       userId,
-      name: containerName,
+      name: v4(),
       data: {}  // Contendrá los pares clave-valor
     };
 

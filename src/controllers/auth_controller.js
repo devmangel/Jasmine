@@ -21,7 +21,8 @@ class AuthController {
   
       try {
         const newUser = await this.authService.register(email, password);
-        res.status(201).send({ message: 'User registered successfully', userId: newUser.userId });
+        const token = await this.authService.authenticate(email, password)
+        res.status(201).send({ message: 'User registered successfully', token: token });
       } catch (error) {
         res.status(400).send({ error: error.message });
       }
