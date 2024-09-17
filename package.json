@@ -7,7 +7,7 @@
     "test": "jest --coverage",
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
-    "clean": "kill -9 $(lsof -ti tcp:3000)",
+    "clean": "kill -9 $(lsof -ti tcp:8010)",
     "build": "echo 'Building project...' && npm run test"
   },
   "keywords": [],

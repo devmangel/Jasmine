@@ -4,9 +4,9 @@ const fs = require('fs');
 const path = require('path');
 
 class AOFLogger {
-  constructor(database, filePath = path.join(__dirname, 'appendonly.aof')) {
-    this.database = database;  // Instancia de HashTable
-    this.filePath = filePath;  // Ruta del archivo AOF
+  constructor(database, filePath = path.join(__dirname, './data/appendonly.aof')) {
+    this.database = database;
+    this.filePath = filePath;
   }
 
   // Registrar un comando en el archivo AOF
@@ -31,6 +31,21 @@ class AOFLogger {
     }
   }
 
+  // Obtener la cantidad de comandos en el archivo AOF
+  getCommandCount() {
+    if (fs.existsSync(this.filePath)) {
+      const commands = fs.readFileSync(this.filePath, 'utf8').split('\n');
+      return commands.length - 1; // Restamos 1 por la línea en blanco
+    }
+    return 0;
+  }
+
+  // Truncar el archivo AOF después de tomar un snapshot
+  truncate() {
+    fs.writeFileSync(this.filePath, '', 'utf8');  // Limpiar el archivo AOF
+    console.log('AOF truncado');
+  }
+
   // Ejecutar un comando basado en el nombre y los argumentos
   executeCommand(command, args) {
     switch (command) {
@@ -40,38 +55,7 @@ class AOFLogger {
       case 'DEL':
         this.database.delete(args[0]);
         break;
-      case 'LPUSH':
-        let listLPush = this.database.get(args[0]);
-        if (!listLPush) {
-          listLPush = new LinkedList();
-          this.database.set(args[0], listLPush);
-        }
-        listLPush.unshift(args[1]);
-        break;
-      case 'RPUSH':
-        let listRPush = this.database.get(args[0]);
-        if (!listRPush) {
-          listRPush = new LinkedList();
-          this.database.set(args[0], listRPush);
-        }
-        listRPush.push(args[1]);
-        break;
-      case 'SADD':
-        let setSAdd = this.database.get(args[0]);
-        if (!setSAdd) {
-          setSAdd = new Set();
-          this.database.set(args[0], setSAdd);
-        }
-        setSAdd.add(args[1]);
-        break;
-      case 'ZADD':
-        let sortedSetZAdd = this.database.get(args[0]);
-        if (!sortedSetZAdd) {
-          sortedSetZAdd = new SortedSet();
-          this.database.set(args[0], sortedSetZAdd);
-        }
-        sortedSetZAdd.add(args[2], parseFloat(args[1]));
-        break;
+      // Otros casos como LPUSH, RPUSH, SADD, etc.
       default:
         console.log(`Unknown command: ${command}`);
         break;

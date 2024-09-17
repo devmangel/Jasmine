@@ -15,6 +15,19 @@ class ContainerController {
         res.status(400).send({ error: error.message });
       }
     }
+
+    // Obtener un contenedor
+    getContainer(req, res) {
+      const { containerId } = req.params;
+      const userId = req.user.userId;
+  
+      try {
+        const container = this.containerService.getContainerById(userId, containerId);
+        res.status(200).send({ container });
+      } catch (error) {
+        res.status(404).send({ error: error.message });
+      }
+    }
   
     // Almacenar datos en un contenedor
     storeData(req, res) {

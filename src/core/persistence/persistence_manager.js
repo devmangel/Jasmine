@@ -12,6 +12,7 @@ class PersistenceManager {
     // Configuraciones de persistencia
     this.snapshotInterval = options.snapshotInterval || 60000;  // Intervalo de snapshot en ms (por defecto, 60s)
     this.useAOF = options.useAOF !== undefined ? options.useAOF : true;  // Habilitar o no AOF
+    this.compactionThreshold = options.compactionThreshold || 10000;  // Umbral de compacción de AOF
   }
 
   // Iniciar el proceso de persistencia
@@ -29,14 +30,27 @@ class PersistenceManager {
     if (this.useAOF) {
       this.aof.logCommand(command, ...args);
     }
+
+    // Revisar si es necesario realizar la compactación
+    if (this.aof.getCommandCount() > this.compactionThreshold) {
+      this.compactAOF();
+    }
   }
 
   // Iniciar auto-snapshot en intervalos regulares
   startAutoSnapshot() {
     setInterval(() => {
-      this.rdb.saveSnapshot();
+      // this.rdb.saveSnapshot();
+      this.compactAOF();  // Compactar el AOF después de cada snapshot
     }, this.snapshotInterval);
     console.log(`Auto snapshot started, interval: ${this.snapshotInterval / 1000} seconds.`);
+  }
+
+  // Compactar el archivo AOF (truncar y reducir)
+  compactAOF() {
+    this.rdb.saveSnapshot();  // Tomar un snapshot antes de compactar
+    this.aof.truncate();  // Truncar el AOF después del snapshot
+    console.log('AOF compactado después del snapshot');
   }
 }
 

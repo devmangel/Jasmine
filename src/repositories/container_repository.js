@@ -1,8 +1,8 @@
 const fs = require('fs');
 const path = require('path');
-const { v4 } = require('uuid');
 
 const CONTAINERS_FILE = path.join(__dirname, '../../data/containers.json');
+const AOF_FILE = path.join(__dirname, '../../data/containers.aof');
 
 class ContainerRepository {
   constructor() {
@@ -11,31 +11,22 @@ class ContainerRepository {
 
   // Crear un nuevo contenedor para un usuario
   createContainer(userId, containerName) {
-    const containerId = `${containerName}`;  // Generar un ID único para el contenedor
+    const containerId = `${containerName}`;
     const newContainer = {
       containerId: containerId,
       userId,
-      name: v4(),
-      data: {}  // Contendrá los pares clave-valor
+      data: {}, // Contendrá los pares clave-valor
     };
 
     this.containers.push(newContainer);
     this.saveContainers();
+    this.logAOF('CREATE', containerId, userId);
     return containerId;
   }
 
   // Obtener un contenedor por ID (asegurarse de que pertenece al usuario)
   getContainerById(containerId) {
-    console.log("Buscando contenedor con containerId:", containerId); 
-  
     const container = this.containers.find(c => c.containerId === containerId) || null;
-  
-    if (!container) {
-      console.log("Contenedor no encontrado.");
-    } else {
-      console.log("Contenedor encontrado:", container);
-    }  
-  
     return container;
   }
 
@@ -45,6 +36,7 @@ class ContainerRepository {
     if (container) {
       container.data[key] = value;
       this.saveContainers();
+      this.logAOF('SET', containerId, key, value);
     }
   }
 
@@ -60,12 +52,16 @@ class ContainerRepository {
     if (container && container.data[key]) {
       delete container.data[key];
       this.saveContainers();
+      this.logAOF('DELETE', containerId, key);
     }
   }
 
   // Guardar todos los contenedores en el archivo JSON
   saveContainers() {
-    fs.writeFileSync(CONTAINERS_FILE, JSON.stringify({ containers: this.containers }, null, 2));
+    fs.writeFileSync(
+      CONTAINERS_FILE,
+      JSON.stringify({ containers: this.containers }, null, 2)
+    );
   }
 
   // Cargar los contenedores desde el archivo JSON
@@ -78,9 +74,34 @@ class ContainerRepository {
     return [];
   }
 
-  // Obtener un contenedor por ID
-  getContainer(containerId) {
-    return this.containers.find(c => c.containerId === containerId) || null;
+  // Log de operaciones de escritura en el archivo AOF
+  logAOF(command, containerId, key = null, value = null) {
+    const logEntry = JSON.stringify({ command, containerId, key, value }) + '\n';
+    fs.appendFileSync(AOF_FILE, logEntry);
+  }
+
+  // Reproducir el archivo AOF para restaurar el estado
+  replayAOF() {
+    if (fs.existsSync(AOF_FILE)) {
+      const logs = fs.readFileSync(AOF_FILE, 'utf8').split('\n').filter(Boolean);
+      logs.forEach(logEntry => {
+        const { command, containerId, key, value } = JSON.parse(logEntry);
+        if (command === 'CREATE') {
+          this.createContainer(containerId, value);
+        } else if (command === 'SET') {
+          this.storeData(containerId, key, value);
+        } else if (command === 'DELETE') {
+          this.deleteData(containerId, key);
+        }
+      });
+      console.log('AOF replay completed for containers.');
+    }
+  }
+
+  // Método para inicializar contenedores y reproducir AOF
+  initialize() {
+    this.loadContainers();  // Cargar el estado desde el archivo JSON
+    this.replayAOF();  // Reproducir los comandos del AOF
   }
 }
 
